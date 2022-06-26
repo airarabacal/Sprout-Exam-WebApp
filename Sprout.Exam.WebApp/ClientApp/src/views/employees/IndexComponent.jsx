@@ -17,7 +17,7 @@ const [ deleteEmployee, {isSuccess: isSuccessDelete}] = employeeApiHooks.useDele
           </tr>
         </thead>
         <tbody>
-          {employeeData.map(employee =>
+          {employeeData?.map(employee =>
             <tr key={employee.id}>
               <td>{employee.fullName}</td>
               <td>{employee.birthdate}</td>

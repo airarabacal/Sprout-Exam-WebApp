@@ -9,8 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sprout.Exam.DataAccess;
+using Sprout.Exam.DataAccess.Data;
+using Sprout.Exam.DataAccess.Interfaces;
+using Sprout.Exam.DataAccess.Models;
 using Sprout.Exam.WebApp.Data;
-using Sprout.Exam.WebApp.Models;
 
 namespace Sprout.Exam.WebApp
 {
@@ -29,6 +32,7 @@ namespace Sprout.Exam.WebApp
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -43,6 +47,7 @@ namespace Sprout.Exam.WebApp
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

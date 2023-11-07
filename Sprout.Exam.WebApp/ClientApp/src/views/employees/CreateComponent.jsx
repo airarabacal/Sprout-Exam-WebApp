@@ -3,7 +3,7 @@ import { employeeApiHooks } from '../../store/employeeApiSlice';
 import RequiredFieldDialog from "../../components/OtherComponents/RequiredFieldDialog";
 
 const IndexComponent = (props) => {
-    const [employee, setEmployee] = useState({ id: 0,fullName: '',birthdate: '',tin: '',typeId: 1 });
+    const [employee, setEmployee] = useState({ id: 0,fullName: '',birthdate: '',tin: '',employeeTypeId: 1 });
     const [ saveEmployee, {isLoading: isLoadingSave, isSuccess: isSuccessUpdate} ] = employeeApiHooks.useSaveEmployeeMutation();
     const [openRequiredFieldDialog, setOpenRequiredFieldDialog] = useState(false);
     const [requiredField, setRequiredField] = useState("")
@@ -19,7 +19,7 @@ const IndexComponent = (props) => {
         e.preventDefault();
         if(checkRequriedField()){
           console.log('test');
-          saveEmployee({Id: employee.id, FullName: employee.fullName, Birthdate: employee.birthdate, Tin: employee.tin, TypeId: employee.typeId});
+          saveEmployee({Id: employee.id, FullName: employee.fullName, Birthdate: employee.birthdate, Tin: employee.tin, EmployeeTypeId: employee.EmployeeTypeId});
         }
           
       }
@@ -40,7 +40,7 @@ const IndexComponent = (props) => {
           setOpenRequiredFieldDialog(true);
           return false;
         }
-        else if(employee.typeId === ""){
+        else if(employee.employeeTypeId === ""){
           setRequiredField("Employee Type");
           setOpenRequiredFieldDialog(true);
           return false;
@@ -61,7 +61,7 @@ const IndexComponent = (props) => {
       }
     
       const handleChangeTypeId = (event) => {
-        setEmployee({ ...employee, typeId: event.target.value});
+        setEmployee({ ...employee, employeeTypeId: event.target.value});
       }
     
       const  renderContent = () => {
@@ -85,7 +85,7 @@ const IndexComponent = (props) => {
                 </div>
                 <div className='form-group col-md-6'>
                 <label htmlFor='inputEmployeeType4'>Employee Type: *</label>
-                <select id='inputEmployeeType4' onChange={handleChangeTypeId} value={employee?.typeId ?? ""}  name="typeId" className='form-control' >
+                <select id='inputEmployeeType4' onChange={handleChangeTypeId} value={employee?.employeeTypeId ?? ""}  name="typeId" className='form-control' >
                     <option value='1'>Regular</option>
                     <option value='2'>Contractual</option>
                 </select>

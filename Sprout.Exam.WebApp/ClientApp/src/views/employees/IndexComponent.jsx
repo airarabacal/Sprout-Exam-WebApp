@@ -20,9 +20,9 @@ const [ deleteEmployee, {isSuccess: isSuccessDelete}] = employeeApiHooks.useDele
           {employeeData?.map(employee =>
             <tr key={employee.id}>
               <td>{employee.fullName}</td>
-              <td>{employee.birthdate}</td>
+              <td>{employee.birthdate ? new Date(employee.birthdate).toLocaleDateString() : employee.birthdate}</td>
               <td>{employee.tin}</td>
-              <td>{employee.typeId === 1?"Regular":"Contractual"}</td>
+              <td>{employee.employeeTypeId === 1?"Regular":"Contractual"}</td>
               <td>
               <button type='button' className='btn btn-info mr-2' onClick={() => props.history.push("/employees/" + employee.id + "/edit")} >Edit</button>
               <button type='button' className='btn btn-primary mr-2' onClick={() => props.history.push("/employees/" + employee.id + "/calculate")}>Calculate</button>

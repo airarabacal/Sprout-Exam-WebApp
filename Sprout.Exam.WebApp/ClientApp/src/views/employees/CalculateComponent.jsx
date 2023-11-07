@@ -13,7 +13,7 @@ const CalculateComponent = (props) => {
       };
 
     const handleSubmit = () => {
-        calculateSalary({Id: employeeData.id, Days: employeeData.typeId === 1 ? absentDays : workDays});
+        calculateSalary({Id: employeeData.id, EmployeeTypeId: employeeData.employeeTypeId, AbsentDays: absentDays, WorkDays : workDays});
         //saveEmployee({Id: 28, FullName: 'Jane Doe test', Birthdate: '2022-06-09', Tin: '123', TypeId: 1});
     }
       const  renderContent = () => {
@@ -43,11 +43,11 @@ const CalculateComponent = (props) => {
 
                     <div className="form-row">
                     <div className='form-group col-md-12'>
-                    <label>Employee Type: <b>{employeeData?.typeId === 1?"Regular": "Contractual"}</b></label>
+                    <label>Employee Type: <b>{employeeData?.EmployeeTypeId === 1?"Regular": "Contractual"}</b></label>
                     </div>
                     </div>
 
-                    { employeeData?.typeId === 1?
+                    { employeeData?.employeeTypeId === 1?
                     <div className="form-row">
                         <div className='form-group col-md-12'><label>Salary: 20000 </label></div>
                         <div className='form-group col-md-12'><label>Tax: 12% </label></div>
@@ -57,7 +57,7 @@ const CalculateComponent = (props) => {
 
                     <div className="form-row">
 
-                    { employeeData?.typeId === 1? 
+                    { employeeData?.employeeTypeId === 1? 
                     <div className='form-group col-md-6'>
                     <label htmlFor='inputAbsentDays4'>Absent Days: </label>
                     <input type='number' className='form-control' id='inputAbsentDays4' onChange={(event) => setAbsentDays(Number(event.target.value))} value={absentDays} name="absentDays" placeholder='Absent Days' />

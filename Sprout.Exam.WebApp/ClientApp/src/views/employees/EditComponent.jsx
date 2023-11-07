@@ -3,11 +3,16 @@ import { employeeApiHooks } from '../../store/employeeApiSlice';
 import RequiredFieldDialog from "../../components/OtherComponents/RequiredFieldDialog";
 
 const EditComponent = (props) => {
-    const [employee, setEmployee] = useState({ id: 0,fullName: '',birthdate: '',tin: '',typeId: 1 });
+    const [employee, setEmployee] = useState({ id: 0,fullName: '',birthdate: '',tin: '',employeeTypeId: 1 });
     const { data: employeeData, isLoading } = employeeApiHooks.useGetEmployeeByIdQuery(props.match.params.id);
     const [ updateEmployee, {isSuccess: isSuccessUpdate}] = employeeApiHooks.useUpdateEmployeeMutation();
     const [openRequiredFieldDialog, setOpenRequiredFieldDialog] = useState(false);
     const [requiredField, setRequiredField] = useState("")
+    const dateOptions = {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }
 
   useEffect(() => {
     if(isLoading) return;
@@ -25,7 +30,7 @@ const EditComponent = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if(checkRequriedField())
-      updateEmployee({Id: employee.id, FullName: employee.fullName, Birthdate: employee.birthdate, Tin: employee.tin, TypeId: employee.typeId});
+      updateEmployee({Id: employee.id, FullName: employee.fullName, Birthdate: employee.birthdate, Tin: employee.tin, EmployeeTypeId: employee.employeeTypeId});
   }
 
   const checkRequriedField = () => {
@@ -65,7 +70,7 @@ const EditComponent = (props) => {
   }
 
   const handleChangeTypeId = (event) => {
-    setEmployee({ ...employee, typeId: event.target.value});
+    setEmployee({ ...employee, employeeTypeId: event.target.value});
   }
 
   const  renderContent = () => {
@@ -82,7 +87,7 @@ const EditComponent = (props) => {
             </div>
             <div className='form-group col-md-6'>
             <label htmlFor='inputBirthdate4'>Birthdate: *</label>
-            <input type='date' className='form-control' id='inputBirthdate4' onChange={handleChangeBirthDate} name="birthdate" value={employee?.birthdate ?? ""} placeholder='Birthdate' />
+            <input type='date' className='form-control' id='inputBirthdate4' onChange={handleChangeBirthDate} name="birthdate" value={employee?.birthdate ? new Date(employee.birthdate).toLocaleDateString("sv-SE") : employee.birthdate} placeholder='Birthdate' />
             </div>
             </div>
             <div className="form-row">
@@ -92,7 +97,7 @@ const EditComponent = (props) => {
             </div>
             <div className='form-group col-md-6'>
             <label htmlFor='inputEmployeeType4'>Employee Type: *</label>
-            <select id='inputEmployeeType4' onChange={handleChangeTypeId} value={employee?.typeId ?? ""}  name="typeId" className='form-control'>
+            <select id='inputEmployeeType4' onChange={handleChangeTypeId} value={employee?.employeeTypeId ?? ""}  name="typeId" className='form-control'>
                 <option value='1'>Regular</option>
                 <option value='2'>Contractual</option>
             </select>

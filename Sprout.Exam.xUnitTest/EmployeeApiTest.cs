@@ -17,27 +17,16 @@ namespace Sprout.Exam.xUnitTest
 {
     public class EmployeeApiTest
     {
-        public readonly DbContextOptions<FakeDbContext> dbContextOptions;
-        public readonly OperationalStoreOptions storeOptions;
-        public readonly IOptions<OperationalStoreOptions> operationalStoreOptions;
+
         public EmployeeApiTest()
         {
-            // Build DbContextOptions
-            dbContextOptions = new DbContextOptionsBuilder<FakeDbContext>()
-                .UseInMemoryDatabase(databaseName: "MyBlogDb")
-                .Options;
 
-            storeOptions = new OperationalStoreOptions
-            {
-                //populate needed members
-            };
-
-            operationalStoreOptions = Options.Create(storeOptions);
         }
+
         [Fact]
         public async void CreateEmployee_Via_UnitOfWork_and_repository()
         {
-            var fakeDbContext = new FakeDbContext(dbContextOptions, operationalStoreOptions);
+            var fakeDbContext = CreateFakeDbContext();
             using (var uof = new UnitOfWork(fakeDbContext))
             {
                 IBaseRepository<EmployeeDto> _employeeRepository = uof.GetRepository<EmployeeDto>();
@@ -52,19 +41,19 @@ namespace Sprout.Exam.xUnitTest
                 uof.Commit();
                 Assert.Equal(1, await fakeDbContext.Employee.CountAsync<EmployeeDto>());
             }
-            
+            fakeDbContext.Dispose();
         }
 
         [Fact]
         public async void GetAllEmployee_via_UnitOfWork_and_repository()
         {
-            var fakeDbContext = new FakeDbContext(dbContextOptions, operationalStoreOptions);
+            var fakeDbContext = CreateFakeDbContext();
 
             var employees = new EmployeeDto[3] {
-                new EmployeeDto(1, "aa", new System.DateTime(2000, 1, 1), "11", 2, false),
-                new EmployeeDto(2, "bb", new System.DateTime(2000, 1, 1), "22", 2, false),
-                new EmployeeDto(3, "cc", new System.DateTime(2000, 1, 1), "33", 2, false)
-            };
+                    new EmployeeDto(1, "aa", new System.DateTime(2000, 1, 1), "11", 2, false),
+                    new EmployeeDto(2, "bb", new System.DateTime(2000, 1, 1), "22", 2, false),
+                    new EmployeeDto(3, "cc", new System.DateTime(2000, 1, 1), "33", 2, false)
+                };
 
             fakeDbContext.AddRange(employees);
             fakeDbContext.SaveChanges();
@@ -74,21 +63,15 @@ namespace Sprout.Exam.xUnitTest
                 IEnumerable<EmployeeDto> retrievedEmployees = await _employeeRepository.GetAsync();
                 Assert.Equal(3, Enumerable.Count<EmployeeDto>(retrievedEmployees));
             }
+            fakeDbContext.Dispose();
+
+
         }
 
         [Fact]
         public async void Update_via_UnitOfWork_and_repository()
         {
-            var fakeDbContext = new FakeDbContext(dbContextOptions, operationalStoreOptions);
-
-            //var employees = new EmployeeDto[3] {
-            //    new EmployeeDto(1, "aa", new System.DateTime(2000, 1, 1), "11", 2, false),
-            //    new EmployeeDto(2, "bb", new System.DateTime(2000, 1, 1), "22", 2, false),
-            //    new EmployeeDto(3, "cc", new System.DateTime(2000, 1, 1), "33", 2, false)
-            //};
-
-            //fakeDbContext.AddRange(employees);
-            //fakeDbContext.SaveChanges();
+            var fakeDbContext = CreateFakeDbContext();
 
             using (var uof = new UnitOfWork(fakeDbContext))
             {
@@ -117,12 +100,13 @@ namespace Sprout.Exam.xUnitTest
                 Assert.Equal(updateEmployee.Tin, employeeFrDbContext.Tin);
                 Assert.Equal(updateEmployee.EmployeeTypeId, employeeFrDbContext.EmployeeTypeId);
             }
+            fakeDbContext.Dispose();
         }
 
         [Fact]
         public void Delete_via_UnitOfWork_and_repository()
         {
-            var fakeDbContext = new FakeDbContext(dbContextOptions, operationalStoreOptions);
+            var fakeDbContext = CreateFakeDbContext();
 
             var employees = new EmployeeDto[3] {
                 new EmployeeDto(1, "aa", new System.DateTime(2000, 1, 1), "11", 2, false),
@@ -142,12 +126,13 @@ namespace Sprout.Exam.xUnitTest
 
                 Assert.Equal(2, fakeDbContext.Employee.Count());
             }
+            fakeDbContext.Dispose();
         }
 
         [Fact]
         public async void GetEmployee_via_UnitOfWork_and_repository()
         {
-            var fakeDbContext = new FakeDbContext(dbContextOptions, operationalStoreOptions);
+            var fakeDbContext = CreateFakeDbContext();
 
             var employees = new EmployeeDto[3] {
                 new EmployeeDto(1, "aa", new System.DateTime(2000, 1, 1), "11", 2, false),
@@ -170,6 +155,7 @@ namespace Sprout.Exam.xUnitTest
                 Assert.Equal(1, employee.EmployeeTypeId);
 
             }
+            fakeDbContext.Dispose();
         }
 
         [Fact]
@@ -224,6 +210,23 @@ namespace Sprout.Exam.xUnitTest
             var result = salaryCalculator.ComputeSalary();
             Assert.Equal(7750, result);
 
+        }
+
+
+        private FakeDbContext CreateFakeDbContext()
+        {
+            DbContextOptions<FakeDbContext> dbContextOptions = new DbContextOptionsBuilder<FakeDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            OperationalStoreOptions storeOptions = new OperationalStoreOptions
+            {
+                //populate needed members
+            };
+
+            IOptions<OperationalStoreOptions> operationalStoreOptions = Options.Create(storeOptions);
+
+            return new FakeDbContext(dbContextOptions, operationalStoreOptions);
         }
     }
 }
